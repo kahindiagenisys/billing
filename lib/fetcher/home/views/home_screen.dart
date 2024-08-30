@@ -101,7 +101,7 @@ class _HomeScreenState extends State<HomeScreen> {
       color: gridItemValue["color"],
       padding: EdgeInsets.zero,
       shapeBorder: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(6.sp),
+        borderRadius: BorderRadius.circular(8.sp),
       ),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,

@@ -10,7 +10,8 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:auto_route/auto_route.dart' as _i4;
 import 'package:billingapp/fetcher/home/views/home_screen.dart' as _i2;
-import 'package:billingapp/fetcher/product/views/add_product_screen.dart' as _i1;
+import 'package:billingapp/fetcher/product/views/add_product_screen.dart'
+    as _i1;
 import 'package:billingapp/fetcher/product/views/products_screen.dart' as _i3;
 
 /// generated route for
