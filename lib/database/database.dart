@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:billingapp/database/daos/product_dao.dart';
 import 'package:billingapp/database/tables/product.dart';
 import 'package:drift/native.dart';
 import "package:path/path.dart" as p;
@@ -8,7 +9,7 @@ import 'package:sqlite3/sqlite3.dart';
 
 part 'database.g.dart';
 
-@DriftDatabase(tables: [Product], daos: [])
+@DriftDatabase(tables: [ProductTable], daos: [ProductDao])
 class AppDatabase extends _$AppDatabase {
   AppDatabase() : super(_openConnection());
 
