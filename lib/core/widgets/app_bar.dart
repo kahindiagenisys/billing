@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:nb_utils/nb_utils.dart';
 
 class AppBarView extends StatefulWidget implements PreferredSizeWidget {
   final String? title;
@@ -29,8 +31,17 @@ class _AppBarViewState extends State<AppBarView> {
       ),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.center,
-        mainAxisAlignment: MainAxisAlignment.center,
+        mainAxisAlignment: MainAxisAlignment.start,
         children: [
+          if (context.canPop)
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 3),
+              child: BackButton(
+                color: widget.backgroundColor == null
+                    ? Colors.black87
+                    : Colors.white70,
+              ),
+            ),
           _buildTitleView(),
         ],
       ),
@@ -41,9 +52,12 @@ class _AppBarViewState extends State<AppBarView> {
     if (widget.title != null) {
       return Text(
         widget.title!,
-        style: const TextStyle(
-          fontSize: 18,
-        ),
+        style: TextStyle(
+            fontSize: 18.sp,
+            color: widget.backgroundColor == null
+                ? Colors.black87
+                : Colors.white70,
+            fontWeight: FontWeight.w500),
       );
     }
     return const SizedBox();
