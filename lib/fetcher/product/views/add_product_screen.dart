@@ -1,14 +1,23 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:billingapp/core/widgets/app_bar.dart';
+import 'package:billingapp/database/database.dart';
+import 'package:billingapp/fetcher/product/view_models/product_view_model.dart';
 import 'package:billingapp/fetcher/product/views/widgets/text_field.dart';
 import 'package:billingapp/res/constant.dart';
+import 'package:billingapp/res/global_object.dart';
+import 'package:drift/drift.dart' as drift;
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:nb_utils/nb_utils.dart' as nb;
 
 @RoutePage()
 class AddProductScreen extends StatefulWidget {
-  const AddProductScreen({super.key});
+  final Product? product;
+
+  const AddProductScreen({
+    super.key,
+    this.product,
+  });
 
   @override
   State<AddProductScreen> createState() => _AddProductScreenState();
@@ -16,13 +25,33 @@ class AddProductScreen extends StatefulWidget {
 
 class _AddProductScreenState extends State<AddProductScreen> {
   TextEditingController productNameTextController = TextEditingController();
+  TextEditingController productPriceTextController = TextEditingController();
+
+  bool isUpdate = false;
+
+  final productLocator = locator<ProductViewModel>();
+
+  @override
+  void initState() {
+    init();
+    super.initState();
+  }
+
+  void init() {
+    if (widget.product != null) {
+      isUpdate = true;
+      productNameTextController.text = widget.product!.productName.validate();
+      productPriceTextController.text =
+          widget.product!.price.toString().validate();
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
-        appBar: const AppBarView(
-          title: "Add Product",
+        appBar: AppBarView(
+          title: isUpdate ? "Update Product" : "Add Product",
           backgroundColor: itsPrimaryColor,
         ),
         body: Column(
@@ -33,7 +62,7 @@ class _AddProductScreenState extends State<AddProductScreen> {
             ),
             AppTextField(
               hintText: "Product Price",
-              textController: productNameTextController,
+              textController: productPriceTextController,
             ),
           ],
         ),
@@ -42,10 +71,35 @@ class _AddProductScreenState extends State<AddProductScreen> {
           color: itsPrimaryColor.shade200,
           width: double.infinity,
           margin: EdgeInsets.symmetric(horizontal: 8.sp),
-          onTap: () {},
-          text: "Save",
+          onTap: () async => await addProduct(),
+          text: isUpdate ? "UPDATE" : "ADD",
         ),
       ),
     );
+  }
+
+  Future<void> addProduct() async {
+
+    if (isUpdate) {
+     await productLocator.updateProduct(
+        widget.product!.copyWith(
+          productName: productNameTextController.text.validate(),
+          price: drift.Value(int.tryParse(productPriceTextController.text) ?? 0),
+        ),
+        onSuccess: afterOnSuccessNavigation,
+      );
+      return;
+    }
+    
+    Map<String, dynamic> product = {
+      "price": int.tryParse(productPriceTextController.text) ?? 0,
+      "name": productNameTextController.text.validate(),
+    };
+   await productLocator.addProduct(
+        product: product, onSuccess: afterOnSuccessNavigation);
+  }
+
+  void afterOnSuccessNavigation() {
+    nb.finish(context);
   }
 }

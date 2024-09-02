@@ -1,8 +1,10 @@
+import 'package:billingapp/locator.dart';
 import 'package:billingapp/router/app_router.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 void main() {
+  setUp();
   runApp(MyApp());
 }
 
@@ -25,7 +27,7 @@ class MyApp extends StatelessWidget {
           ),
           useMaterial3: true,
         ),
-        routerConfig:_appRouter.config(
+        routerConfig: _appRouter.config(
           rebuildStackOnDeepLink: true,
         ),
       ),
