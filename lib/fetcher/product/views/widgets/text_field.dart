@@ -9,13 +9,16 @@ class AppTextField extends StatefulWidget {
   final Color? backGroundColor;
   final String? hintText;
   final TextInputType? textInputType;
+  final String? Function(String?)? validation;
 
   const AppTextField({
     super.key,
     this.backGroundColor,
     this.hintText,
     required this.textController,
-    this.focusNode, this.textInputType,
+    this.focusNode,
+    this.textInputType,
+    this.validation,
   });
 
   @override
@@ -44,7 +47,7 @@ class _AppTextFieldState extends State<AppTextField> {
               horizontal: 8.sp,
             ),
           ),
-          validator: (val) => null,
+          validator: widget.validation,
         ),
       ),
     );

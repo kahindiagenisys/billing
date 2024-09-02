@@ -2,13 +2,16 @@ import 'package:auto_route/auto_route.dart';
 import 'package:billingapp/core/widgets/app_bar.dart';
 import 'package:billingapp/database/database.dart';
 import 'package:billingapp/fetcher/product/view_models/product_view_model.dart';
-import 'package:billingapp/fetcher/product/views/widgets/text_field.dart';
+import 'package:billingapp/fetcher/product/views/widgets/text_field.dart'
+    as app;
+import 'package:billingapp/res/app_util.dart';
 import 'package:billingapp/res/constant.dart';
 import 'package:billingapp/res/global_object.dart';
 import 'package:drift/drift.dart' as drift;
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:nb_utils/nb_utils.dart' as nb;
+import 'package:nb_utils/nb_utils.dart';
 
 @RoutePage()
 class AddProductScreen extends StatefulWidget {
@@ -30,6 +33,7 @@ class _AddProductScreenState extends State<AddProductScreen> {
   bool isUpdate = false;
 
   final productLocator = locator<ProductViewModel>();
+  final _formKey = GlobalKey<FormState>();
 
   @override
   void initState() {
@@ -54,24 +58,30 @@ class _AddProductScreenState extends State<AddProductScreen> {
           title: isUpdate ? "Update Product" : "Add Product",
           backgroundColor: itsPrimaryColor,
         ),
-        body: Column(
-          children: [
-            AppTextField(
-              hintText: "Product Name",
-              textController: productNameTextController,
-            ),
-            AppTextField(
-              hintText: "Product Price",
-              textController: productPriceTextController,
-            ),
-          ],
+        body: Form(
+          key: _formKey,
+          child: Column(
+            children: [
+              app.AppTextField(
+                hintText: "Product Name",
+                textController: productNameTextController,
+                validation: (value) => validator(value),
+              ),
+              app.AppTextField(
+                hintText: "Product Price",
+                textController: productPriceTextController,
+                validation: (value) => validator(value),
+                textInputType: TextInputType.number,
+              ),
+            ],
+          ),
         ),
         floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
         floatingActionButton: nb.AppButton(
           color: itsPrimaryColor.shade200,
           width: double.infinity,
           margin: EdgeInsets.symmetric(horizontal: 8.sp),
-          onTap: () async => await addProduct(),
+           onTap: () async => await addProduct(),
           text: isUpdate ? "UPDATE" : "ADD",
         ),
       ),
@@ -79,24 +89,30 @@ class _AddProductScreenState extends State<AddProductScreen> {
   }
 
   Future<void> addProduct() async {
-
-    if (isUpdate) {
-     await productLocator.updateProduct(
-        widget.product!.copyWith(
-          productName: productNameTextController.text.validate(),
-          price: drift.Value(int.tryParse(productPriceTextController.text) ?? 0),
-        ),
-        onSuccess: afterOnSuccessNavigation,
-      );
+    if (_formKey.currentState == null || !_formKey.currentState!.validate()) {
       return;
     }
-    
-    Map<String, dynamic> product = {
-      "price": int.tryParse(productPriceTextController.text) ?? 0,
-      "name": productNameTextController.text.validate(),
-    };
-   await productLocator.addProduct(
-        product: product, onSuccess: afterOnSuccessNavigation);
+      if (isUpdate) {
+        await productLocator.updateProduct(
+          widget.product!.copyWith(
+            productName: productNameTextController.text.validate(),
+            price:
+            drift.Value(int.tryParse(productPriceTextController.text) ?? 0),
+          ),
+          onSuccess: afterOnSuccessNavigation,
+        );
+        return;
+      }
+
+      Map<String, dynamic> product = {
+        "price": int.tryParse(productPriceTextController.text) ?? 0,
+        "name": productNameTextController.text.validate(),
+      };
+      await productLocator.addProduct(
+          product: product, onSuccess: afterOnSuccessNavigation);
+
+
+
   }
 
   void afterOnSuccessNavigation() {

@@ -11,7 +11,7 @@ class ProductDao extends DatabaseAccessor<AppDatabase> with _$ProductDaoMixin {
 
   Stream<List<Product>> productItems() {
     return (appDatabase.select(productTable)
-    //..where((product) => product.price.isBiggerThan() )
+          ..where((product) => product.price.isBiggerThanValue(0))
           ..orderBy(
               [(product) => OrderingTerm(expression: product.productName)]))
         .watch();
